@@ -2,7 +2,10 @@
 
 ## Estado
 
-El proyecto tiene configuracion para GitHub y Vercel. Crear un repositorio remoto y publicar en Vercel requiere conectar las cuentas correspondientes. Para operar los circulos desde cualquier equipo, tambien se requiere el despliegue de contratos en Sepolia.
+- Codigo: https://github.com/camicaicedof/la-junta-proyecto3
+- Aplicacion publicada: https://la-junta-proyecto3.vercel.app
+
+La interfaz esta publicada como vista previa. Para operar los circulos desde cualquier equipo falta financiar la billetera de pruebas y desplegar los contratos en Sepolia. La publicacion inicial se hizo con la herramienta de Vercel; la conexion para despliegues automaticos desde GitHub sigue pendiente de acceso de Vercel al repositorio.
 
 ## GitHub
 
@@ -11,6 +14,8 @@ Subir los archivos fuente y la documentacion. `.gitignore` excluye dependencias,
 ## Sepolia
 
 Completar `.env` en tu computador usando `.env.example` como referencia. Usar una cuenta exclusiva de pruebas con ETH de Sepolia; no compartir su clave en el chat.
+
+Como alternativa, `npm run setup:sepolia` crea una billetera exclusiva de pruebas en `.env` si no existe una clave configurada y muestra solamente su direccion publica y saldo. Ejecutarlo otra vez conserva la billetera existente. Enviar a esa direccion unicamente ETH de Sepolia, obtenido de un faucet; no enviar dinero real.
 
 ```powershell
 .\proyecto.ps1 deploy:sepolia
