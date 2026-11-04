@@ -1,199 +1,122 @@
-# La Junta — Natillera comunitaria en blockchain
+# La Junta — Ahorro comunitario en blockchain
 
-Prototipo académico del Proyecto #3. Contratos sencillos en Solidity, OpenZeppelin, Hardhat y una interfaz en JavaScript con ethers y MetaMask. No requiere base de datos ni servidor de aplicación.
+La Junta es un prototipo académico inspirado en las natilleras y cadenas de ahorro de Colombia. Un grupo define sus cuotas y plazos, y un contrato inteligente registra los aportes, aplica las reglas de mora y asigna los saldos que corresponden a cada participante.
 
-**Usar únicamente tokens de prueba.** No es un producto financiero auditado. El token mUSD representa una unidad estable de cuenta para la demostración: cualquiera puede crearlo con el faucet y no tiene respaldo, precio garantizado ni valor real.
+El proyecto utiliza **tokens ficticios y redes de prueba**. No se debe utilizar con dinero real.
 
-## 1. Qué incluye
+- **Aplicación:** [la-junta-proyecto3.vercel.app](https://la-junta-proyecto3.vercel.app/)
+- **Código fuente:** [camicaicedof/la-junta-proyecto3](https://github.com/camicaicedof/la-junta-proyecto3)
+- **Instalación, código y despliegue:** [Guía del desarrollador](DESARROLLADOR.md)
 
-| Requisito | Implementación |
+## Estado actual
+
+Estado documentado al **4 de noviembre de 2026**.
+
+| Parte del proyecto | Estado |
 | --- | --- |
-| Crear círculos paramétricos | Una fábrica despliega un contrato nuevo por círculo. |
-| Cuotas, participantes y periodicidad | Parámetros inmutables: entre 2 y 30 billeteras; periodos de al menos 60 segundos. |
-| Bóveda sin tesorero | El contrato custodia tokens; el creador no puede extraer garantías ni cambiar las reglas. |
-| Reglas anti-mora | Garantía previa que cubre todas las cuotas y multas máximas. |
-| Premios a puntuales | Rendimientos simulados y multas repartidos solo entre quienes aportan antes del vencimiento. |
-| Orden verificable | Orden de inscripción o sorteo con compromiso/revelación y Fisher-Yates. |
-| Adjudicación | Fondo por turnos o reparto igual del capital al cierre de todos los periodos. |
-| Estado de cuentas | Garantía, aporte del periodo, puntualidades, moras y saldo retirable por billetera. |
-| Ejecución periódica | Cualquier cuenta puede liquidar; script keeper para invocar la operación. |
+| Página web compartible | Publicada en Vercel y comprobada sin iniciar sesión. |
+| Código fuente | Publicado en GitHub. |
+| Contratos y reglas de ahorro | Implementados y probados en una red local. |
+| Pruebas de contratos | 13 pruebas aprobadas en la verificación de desarrollo. |
+| Contratos públicos en Sepolia | Pendientes de financiación con ETH de prueba y despliegue. |
+| Operaciones en la web pública | Deshabilitadas hasta configurar los contratos de Sepolia. |
+| Liquidación periódica sin intervención | Existe un ejecutor; todavía no está alojado ni programado. |
 
-## 2. Instalación
+**La página publicada es una vista previa.** Se puede consultar su diseño y calcular las condiciones de un círculo, pero todavía no permite crear círculos ni realizar transacciones públicas. El recorrido completo se puede demostrar en el entorno local preparado para desarrollo.
 
-Requisitos: **Node.js 22 o 24 LTS**, npm y MetaMask en un navegador con extensiones. Las dependencias están fijadas en `package.json`; se incluye `pnpm-lock.yaml` para instalaciones con pnpm.
+## Qué incluye
 
-En esta carpeta:
-
-```powershell
-npm install
-npm test
-npm run demo
-```
-
-La demostración ejecuta tres periodos, provoca una mora en el último y retira todos los saldos. Debe terminar con `Saldo final del contrato: 0`.
-
-**Alternativa para este equipo, donde npm no está en PATH:** el archivo `proyecto.ps1` detecta también el Node/pnpm del entorno Codex.
-
-```powershell
-.\proyecto.ps1 install
-.\proyecto.ps1 test
-.\proyecto.ps1 demo
-```
-
-En la sesión de desarrollo las dependencias ya quedaron instaladas. Si PowerShell bloquea scripts, se pueden usar los comandos `npm` o `node scripts/hardhat.js test` directamente, sin modificar la política del sistema.
-
-## 3. Despliegue local y aplicación
-
-Abrir tres terminales en esta carpeta.
-
-**Terminal 1: mantener el nodo encendido.**
-
-```powershell
-npm run node
-# Alternativa: .\proyecto.ps1 node
-```
-
-**Terminal 2: desplegar token y fábrica.**
-
-```powershell
-npm run deploy:local
-# Alternativa: .\proyecto.ps1 deploy:local
-```
-
-Esto escribe direcciones y ABI en `deployments/localhost.json` y `frontend/public/deployment.json`.
-
-**Terminal 3: iniciar la interfaz.**
-
-```powershell
-npm run dev
-# Alternativa: .\proyecto.ps1 dev
-```
-
-Abrir la dirección que imprime Vite, normalmente [http://127.0.0.1:5173](http://127.0.0.1:5173). Si el puerto está ocupado, Vite utiliza el siguiente libre.
-
-Configurar una red personalizada en MetaMask:
-
-| Campo | Valor |
+| Función | Qué permite hacer |
 | --- | --- |
-| Nombre | Hardhat local |
-| RPC | `http://127.0.0.1:8545` |
-| Chain ID | `31337` |
-| Símbolo | `ETH` |
+| Crear un círculo | Definir cuota, participantes, duración del periodo, multa, rendimiento simulado y modalidad de entrega. |
+| Participar con una billetera | Conectar MetaMask, solicitar mUSD ficticio e inscribirse depositando una garantía. |
+| Registrar aportes | Pagar una cuota por periodo y consultar si se registró a tiempo. |
+| Custodiar los depósitos | Guardar los tokens en el contrato; el creador no puede retirarlos a discreción ni cambiar las reglas. |
+| Cubrir incumplimientos | Descontar de la garantía la cuota pendiente y la multa. |
+| Premiar la puntualidad | Distribuir las multas y el rendimiento simulado entre quienes aportaron a tiempo en cada periodo. |
+| Entregar por turnos | Asignar el fondo de cada periodo a un participante diferente. |
+| Entregar al cierre | Acumular el capital y repartirlo por igual al terminar el ciclo. |
+| Elegir el orden | Utilizar el orden de inscripción o un sorteo con compromiso y revelación de semillas. |
+| Consultar cuentas | Ver participantes, garantías, cuotas del periodo, puntualidades, moras, orden y saldos retirables. |
+| Recuperar depósitos si no se inicia | Cancelar después del plazo si faltan inscripciones o revelaciones, y habilitar la devolución. |
+| Liquidar y retirar | Liquidar periodos vencidos y retirar los saldos asignados. Un ejecutor también puede pagar el gas para enviar el saldo al beneficiario. |
 
-Importar tres cuentas de desarrollo usando las claves **públicas de prueba** que imprime Hardhat. Usarlas exclusivamente en la red local. Cada una ya tiene ETH ficticio para gas. No hace falta pegar claves en el código ni en la aplicación web.
+Cada círculo admite **entre 2 y 30 billeteras**, y dura tantos periodos como participantes tenga. Las condiciones quedan fijas al crearlo. La cuota debe ser positiva; el periodo y los plazos de inscripción y revelación son de al menos 60 segundos. La multa admite hasta 20% de la cuota y el rendimiento simulado hasta 10% por periodo.
 
-Al reiniciar el nodo se pierde su estado. Volver a desplegar, recargar la página y, si MetaMask conserva nonces anteriores, borrar su actividad de la red local. La interfaz muestra las direcciones del último despliegue; cada despliegue crea una fábrica nueva.
+## Qué no incluye y qué limitaciones tiene
 
-## 4. Guion de demostración con MetaMask
+- **Dinero real, pesos colombianos ni una stablecoin respaldada.** mUSD tiene seis decimales y se entrega gratuitamente para la demostración. No tiene valor comercial ni se puede cambiar por dinero mediante esta aplicación.
+- **Conexión con bancos, Nequi, Daviplata o pasarelas de pago.** Todos los aportes del prototipo se realizan con el token de prueba.
+- **Rendimientos financieros reales.** El creador deposita una reserva de mUSD ficticio que financia los premios simulados. No existe una inversión DeFi ni protección garantizada frente a la inflación.
+- **Crédito sin garantía.** Cada participante debe bloquear previamente todas sus cuotas y las multas máximas posibles. Esta exigencia protege los desembolsos, pero limita la utilidad para personas sin capital inicial.
+- **Identificación de personas.** Una billetera no equivale a una persona; no se verifica identidad ni se impide que alguien utilice varias cuentas.
+- **Grupos privados por invitación.** La inscripción está abierta a cualquier billetera que deposite la garantía mientras haya cupo y plazo. No hay lista de miembros autorizados.
+- **Un sistema de evaluación crediticia.** La puntualidad y la mora son contadores públicos de cada círculo; no hay un modelo de crédito ni reputación compartida entre círculos.
+- **Un sorteo resistente a cualquier manipulación.** Se puede verificar el cálculo, pero alguien puede negarse a revelar su semilla y forzar una cancelación. No se ha integrado un servicio externo de aleatoriedad verificable.
+- **Pagos que se ejecuten solos por el paso del tiempo.** Alguien debe enviar una transacción para liquidar. El ejecutor disponible puede automatizar las llamadas si se programa y dispone de gas.
+- **Salida libre durante un ciclo activo.** No se pueden cambiar las condiciones, abandonar retirando la garantía ni cancelar un ciclo activo a voluntad.
+- **Recuperación de claves o soporte de custodia.** Cada persona controla su billetera. El proyecto no puede recuperar una clave privada perdida.
+- **Auditoría de seguridad ni preparación para producción.** Las pruebas realizadas no sustituyen una auditoría. No se ha completado una demostración de transacciones con MetaMask en Sepolia.
 
-1. Conectar la primera cuenta y pedir mUSD con el botón del faucet.
-2. Crear un círculo: cuota 100 mUSD, 3 participantes, periodo 120 segundos, multa 5%, rendimiento simulado 1%, modalidad por turnos y orden de inscripción.
-3. Con la cuenta creadora, **financiar la reserva**. La interfaz calcula 55,35 mUSD. MetaMask pedirá primero autorización del token y después la transacción de financiación.
-4. Inscribir las tres cuentas, cambiando de cuenta en MetaMask. Cada una necesita solicitar sus tokens y depositar 315 mUSD de garantía. La última inscripción inicia el primer periodo.
-5. Aportar 100 mUSD desde cada cuenta antes del plazo. La garantía y los aportes son depósitos distintos.
-6. Una vez vencido, actualizar y pulsar **Liquidar periodo vencido**. Cualquier billetera puede hacerlo. El primer miembro recibe 300 mUSD en saldo retirable, además del premio que le corresponda.
-7. Repetir en el segundo periodo. En el tercero, dejar sin aportar a quien ya recibió un turno. Al liquidar, su garantía cubrirá los 100 mUSD más 5 mUSD de multa.
-8. Retirar los saldos desde cada cuenta. Al terminar, también se habilita la devolución de las garantías sobrantes y de la reserva no utilizada al creador.
+## Cómo funciona el dinero de prueba
 
-No se puede pagar tarde una ronda cerrada: la mora se resuelve cobrando de la garantía. Los plazos usan el timestamp de la cadena; la interfaz muestra el vencimiento en la hora local del navegador. Si cambia de cuenta, conectar de nuevo. Con periodos muy cortos, preparar las cuentas y sus mUSD antes de completar la última inscripción.
+Hay tres depósitos distintos:
 
-Para mostrar la modalidad **al cierre**, crear otro círculo y seleccionarla: ningún participante recibe el capital de la ronda por adelantado. Los premios sí quedan retirables en cada liquidación. Al finalizar, cada miembro recibe `N × cuota` de ahorro, más su garantía restante y premios.
+1. **Garantía de cada participante:** se deposita al inscribirse. Cubre todas sus cuotas y multas máximas. La parte no consumida se devuelve al finalizar.
+2. **Cuotas periódicas:** se pagan durante el ciclo y son adicionales a la garantía. Si una persona no paga, el contrato utiliza su garantía para cubrir la cuota y la multa.
+3. **Reserva del creador:** financia el rendimiento simulado. El sobrante vuelve al creador al finalizar o cancelar.
 
-Para mostrar el **sorteo**, seleccionarlo antes de crear. Al inscribirse, cada billetera genera una semilla aleatoria de 32 bytes y registra únicamente su hash. Conservar la semilla visible como respaldo. Al llenarse los cupos, cada persona pulsa **Revelar mi semilla**. La última revelación inicia el ciclo y fija el orden. La semilla se guarda por cadena, contrato y cuenta en el navegador; si se pierde, puede restaurarse en el campo antes de revelar. No es una contraseña de la billetera y se hará pública en la revelación.
+Ejemplo con **3 participantes, cuota de 100 mUSD y multa de 5%**:
 
-## 5. Desplegar en Sepolia
+| Concepto | Monto |
+| --- | --- |
+| Garantía inicial por persona | 315 mUSD |
+| Aporte por persona en cada periodo | 100 mUSD |
+| Multa por una cuota incumplida | 5 mUSD |
+| Fondo de cada periodo | 300 mUSD |
+| Garantía restante tras una mora | 210 mUSD |
 
-Sepolia permite demostrar contratos públicos sin utilizar dinero real. Se necesita una cuenta exclusiva de pruebas, ETH de Sepolia para gas y un RPC de Sepolia. No compartir claves privadas por chat.
+Con rendimiento simulado de 1%, el creador debe financiar inicialmente una reserva de **55,35 mUSD** para ese ejemplo. La interfaz calcula los depósitos antes de crear el círculo.
 
-1. Copiar `.env.example` como `.env`.
-2. Completar `SEPOLIA_RPC_URL` y `PRIVATE_KEY` localmente. `.env` está excluido del control de versiones.
-3. Ejecutar:
+En la modalidad por turnos, una persona recibe el fondo de cada periodo. Al cierre, cada participante recibe el mismo capital acumulado: en este ejemplo, 300 mUSD por persona. En ambos casos, las garantías restantes y los premios se contabilizan por separado.
 
-```powershell
-npm run deploy:sepolia
-# Alternativa: .\proyecto.ps1 deploy:sepolia
-npm run dev
-```
+**mUSD y ETH de prueba cumplen funciones diferentes:** mUSD sirve para garantías, cuotas y premios; ETH de la red de prueba sirve para pagar las transacciones de la billetera.
 
-4. Seleccionar Sepolia (chain ID `11155111`) en MetaMask, conectar y pedir mUSD con el faucet. Cada cuenta necesita ETH de prueba para sus transacciones.
+## Cómo usar la aplicación cuando los contratos estén habilitados
 
-El despliegue exporta automáticamente la configuración de Sepolia para la interfaz. No se ha hecho un despliegue público durante la preparación: no se proporcionó una cuenta de pruebas financiada. No es necesario sustituir mUSD por un token real para sustentar el proyecto.
+Para la versión compartida se necesita un navegador con MetaMask, la red Sepolia y una cuenta con ETH de Sepolia para gas. Para la demostración local, seguir la [guía del desarrollador](DESARROLLADOR.md#3-ejecutar-en-local).
 
-Para distribuir la interfaz estática después de desplegar:
+1. Conectar MetaMask en la red que indique la página.
+2. Solicitar mUSD con **Recibir 100.000 mUSD de prueba**.
+3. Crear un círculo o seleccionar uno disponible en esa fábrica y red.
+4. Si eres el creador, financiar la reserva antes de iniciar el ciclo.
+5. Depositar la garantía e inscribirte. MetaMask puede pedir primero autorización del token y después confirmar el depósito.
+6. Si hay sorteo, guardar la semilla y revelarla cuando estén completos los cupos. La semilla del sorteo es distinta de la frase de recuperación de MetaMask.
+7. Aportar la cuota antes del vencimiento de cada periodo.
+8. Después del vencimiento, pulsar **Liquidar periodo vencido**. Cualquier billetera puede hacerlo, aunque no sea el creador.
+9. Pulsar **Retirar mi saldo** cuando haya un monto disponible.
 
-```powershell
-npm run build
-```
+La liquidación asigna el saldo en el contrato. Los tokens llegan a la billetera cuando se ejecuta el retiro, desde la interfaz o mediante el ejecutor. Si una cuota no llega antes del plazo, se cubre desde la garantía al liquidar; no hay un pago tardío de esa ronda para eliminar la multa.
 
-Publicar el contenido de `frontend/dist` en un hosting estático HTTPS. El archivo `deployment.json` queda incluido; nunca publicar `.env`. Para una nueva red, volver a desplegar y construir. Un sitio público debe apuntar a Sepolia: la red local de una persona no es accesible desde los equipos de los demás.
+Si se cambia de cuenta o de red, la página se recarga y puede ser necesario conectar de nuevo. Conservar una copia de la semilla del sorteo: se guarda en el navegador, pero puede perderse al borrar sus datos o cambiar de equipo.
 
-Para publicar desde GitHub en Vercel, seguir `PUBLICAR.md`. El archivo `vercel.json` ya configura la construcción en nube y el script evita publicar direcciones del nodo local.
+## Preguntas frecuentes
 
-## 6. Reglas económicas y contabilidad
+**¿Por qué los botones de la página pública están deshabilitados?**  
+Porque todavía no se han desplegado y configurado los contratos de Sepolia. Publicar la página y desplegar los contratos son pasos diferentes.
 
-Variables: `N` participantes, `Q` cuota, `M = floor(Q × multaBps / 10.000)` multa por incumplimiento.
+**¿Qué pasa si alguien cobra su turno y deja de aportar?**  
+Sus siguientes cuotas pendientes y multas se descuentan de la garantía depositada al inscribirse. La garantía no se libera por haber recibido el turno.
 
-**Garantía por persona:** `G = N × (Q + M)`. Se bloquea al inscribirse. Cubre incluso el incumplimiento de todos durante todo el ciclo. Cada periodo tiene un aporte adicional `Q`: pagar mantiene la garantía intacta; incumplir reduce la garantía en `Q + M`.
+**¿Qué pasa si no se completa el grupo o alguien no revela?**  
+Al vencer el plazo correspondiente, cualquier cuenta puede cancelar y habilitar la devolución de garantías y reserva. Cada devolución debe retirarse o ser enviada por el ejecutor.
 
-Ejemplo: `N=3`, `Q=100`, multa 5% → `M=5`, `G=315 mUSD`. Con una mora quedan 210 de garantía; al finalizar se devuelve la parte no consumida. Esta garantía elevada resuelve la insolvencia del prototipo, pero **reduce la utilidad como crédito para personas sin capital inicial**. Una multa sin garantía no impide que alguien reciba su turno y abandone. La blockchain por sí sola no cobra deudas fuera de cadena.
+**¿El creador puede llevarse el ahorro del grupo?**  
+El contrato no ofrece un retiro arbitrario ni permite modificar las condiciones. El creador solo recibe los saldos que le correspondan y el sobrante de la reserva que financió. Esto no elimina los riesgos de errores del código.
 
-**Rendimiento simulado:** al liquidar cada periodo se toma el capital bloqueado en ese momento, después de descontar las multas y antes de adjudicar el fondo: `R = floor(capitalBloqueado × tasaBps / 10.000)`. Incluye garantías y aportes acumulados. Excluye reserva de rendimientos y saldos ya adjudicados. Es una tasa didáctica por periodo, sin capitalización, no una tasa anual ni interés calculado segundo a segundo.
+**¿Dónde están las instrucciones para instalar o modificar el proyecto?**  
+En [DESARROLLADOR.md](DESARROLLADOR.md).
 
-Los tokens del rendimiento salen de una **reserva real en mUSD ficticio**, financiada antes de iniciar. No se crean rendimientos de la nada ni se utilizan garantías ajenas para pagarlos. La reserva mínima usa la cota `maxCapital = N × G + N² × Q`; se financian `N × floor(maxCapital × tasaBps / 10.000)`. Es conservadora: el sobrante vuelve al creador al finalizar o cancelar.
+## Contexto académico
 
-**Premio de la ronda:** `multas + R`, repartido por igual entre los puntuales de esa ronda. Si no hubo puntuales, vuelve a la reserva. El polvo de redondeo también va a reserva. Las contribuciones pendientes se cubren con garantía y el fondo siempre es `N × Q`.
-
-La contabilidad separa `capitalBloqueado`, `reservaRendimientos` y `saldoRetirable`. Tras retirar todos los saldos de un ciclo normal, el saldo del contrato queda en cero. Las transferencias directas de tokens al contrato no se contabilizan; utilizar exclusivamente las funciones previstas.
-
-## 7. Sorteo y automatización: alcance honesto
-
-- El compromiso liga la semilla a billetera, contrato y chain ID mediante `keccak256(abi.encode(...))`. Todos se comprometen antes de que empiece la revelación.
-- La semilla final es el XOR de las semillas reveladas; no depende del orden de revelación. Fisher-Yates y sus hashes determinan la permutación pública. Las pruebas reconstruyen el orden fuera del contrato.
-- **Limitación:** el último revelador puede conocer el resultado y negarse a revelar. No puede cambiar su semilla comprometida, pero puede forzar una cancelación selectiva y promover otro círculo. No se afirma que sea aleatoriedad imparcial resistente a adversarios. Para una versión real, integrar un servicio VRF con su verificación y gestión de disponibilidad; no usar `block.timestamp` como aleatoriedad.
-- Si faltan inscripciones o revelaciones, cualquiera puede cancelar después del plazo; cada miembro recupera su garantía y el creador su reserva. Nadie puede cancelar un ciclo activo a discreción.
-- Un contrato no se despierta solo por el paso del tiempo. `cerrarRonda()` aplica automáticamente las reglas cuando una transacción lo invoca y acredita los saldos. Cada persona puede retirar el suyo; también existe `retirarPara(miembro)` para que un ejecutor pague el gas. Los tokens siempre van a ese miembro, nunca al ejecutor. Cada transferencia es una operación independiente.
-- `npm run keeper:local` o `npm run keeper:sepolia` revisa todos los círculos **una vez**, liquida los vencidos o cancela los abandonados, y desembolsa los saldos disponibles con `retirarPara`. Para ejecución continua, programar el comando periódicamente con un servicio externo y una cuenta con gas. La interfaz también permite liquidar y retirar manualmente. El siguiente periodo empieza al liquidar, para dar una ventana completa si el ejecutor llegó tarde.
-
-## 8. Cómo leer el código
-
-```text
-contracts/
-  MockUSD.sol           Token ERC20 de 6 decimales y faucet público
-  CirculoAhorro.sol     Reglas, custodia, sorteo y contabilidad
-  FabricaCirculos.sol   Creación y registro de círculos
-scripts/
-  deploy.js            Despliegue y exportación de ABI/direcciones
-  demo.js              Demostración completa, red efímera independiente
-  keeper.js            Una pasada de liquidación/cancelación
-  hardhat.js           Adaptador para cache local en Windows
-test/
-  CirculoAhorro.test.js Casos de negocio, restricciones y conservación de tokens
-frontend/
-  index.html           Estructura de la aplicación
-  src/main.js          Conexión con billetera y llamadas a los contratos
-  src/style.css        Estilos responsivos
-proyecto.ps1           Comandos alternativos para PowerShell
-```
-
-Estados: `Inscripcion → Revelacion (si sorteo) → Activo → Finalizado`. Desde inscripción/revelación se puede pasar a `Cancelado` al vencer sus plazos.
-
-Se usa OpenZeppelin para `ERC20`, `SafeERC20` y `ReentrancyGuard`. Las transferencias aplican autorización previa `approve` y luego `transferFrom`. Los retiros ponen el saldo en cero antes de transferir, con protección de reentrada. No hay proxy actualizable, dueño con retiro arbitrario ni función para cambiar parámetros. Esto reduce superficies de riesgo, pero no equivale a una auditoría ni elimina errores de software.
-
-## 9. Verificación realizada y límites
-
-- Compilación de 12 archivos Solidity con solc 0.8.26.
-- 13 pruebas exitosas: ambos modos, incumplimiento tras recibir turno, todos morosos, varias combinaciones de moras, prohibición de aportes inválidos, reserva, cancelaciones, reproducción del sorteo, retiros, desembolso mediante ejecutor y fábrica.
-- Demostración completa: una mora y saldo final del contrato de cero.
-- Despliegue de MockUSD y fábrica en red local; interfaz servida por HTTP y revisada visualmente.
-- Build de producción de la interfaz. El navegador de revisión no dispone de MetaMask: el recorrido de transacciones de la interfaz con la extensión queda para la demostración en un navegador que la tenga. Las operaciones de contratos sí se probaron con cuentas de Hardhat.
-- No se ejecutó despliegue ni verificación de fuente en un explorador de Sepolia.
-
-No hay identificación de personas (una billetera no equivale a una persona), respaldo fiat, integración bancaria ni generación de rendimiento DeFi. La reputación son contadores públicos por círculo; no se entrenó un modelo crediticio ni se consulta información personal. El artículo de Berkeley sirve de contexto, no de validación de estas reglas.
-
-## Referencias
-
-- [Contexto: reputación, redes sociales y acceso al crédito — Berkeley Haas](https://haas.berkeley.edu/ibsi/research/good-reputation-expanding-access-to-credit-leveraging-reputational-and-social-network-data/).
-- [OpenZeppelin Contracts 5.x — ERC20 y SafeERC20](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20).
-- [Hardhat 2 — documentación del entorno utilizado](https://v2.hardhat.org/hardhat-runner/docs/getting-started).
-
-Se fija Hardhat 2 para conservar configuración y scripts JavaScript cortos, y OpenZeppelin 5.0.2 para reproducibilidad. La documentación actual de Hardhat presenta también Hardhat 3, cuya configuración es diferente: no mezclar los ejemplos de ambas versiones.
+Proyecto #3 de Tecnologías Emergentes: ahorro comunitario, reglas anti-mora y transparencia mediante blockchain. El recurso de [Berkeley Haas sobre reputación y acceso al crédito](https://haas.berkeley.edu/ibsi/research/good-reputation-expanding-access-to-credit-leveraging-reputational-and-social-network-data/) se utiliza como contexto; el prototipo no implementa ni valida un modelo crediticio basado en esa investigación.
