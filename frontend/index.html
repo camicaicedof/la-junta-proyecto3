@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Junta · Ahorro comunitario</title></head>
+<body>
+  <header><a class="brand" href="/">◈ La Junta<span>AHORRAR EN COMUNIDAD</span></a><button id="connect">Conectar MetaMask ↗</button></header>
+  <main>
+    <section class="hero"><div><span class="eyebrow">PROYECTO 03 / BLOCKCHAIN</span><h1>La confianza,<br>con cuentas claras.</h1><p>Tu círculo de ahorro, sus reglas y cada aporte registrados en cadena. Sin un tesorero que custodie el dinero.</p></div><aside><span class="badge">PROTOTIPO ACADÉMICO</span><h2>Ahorro compartido.<br>Reglas visibles.</h2><p>mUSD es un token de prueba sin valor real. Los rendimientos se pagan con una reserva simulada.</p><div id="wallet">Conecta tu billetera para comenzar.</div><button id="faucet" disabled>Recibir 100.000 mUSD de prueba</button></aside></section>
+    <p id="notice" role="status" aria-live="polite">Cargando configuración del despliegue…</p>
+    <section class="workspace">
+      <article class="panel"><div class="section-number">01 / ORGANIZAR</div><h2>Crea una junta</h2><p>Las condiciones quedan fijas al crear el contrato.</p>
+        <form id="create">
+          <label>Cuota por periodo (mUSD)<input name="quota" type="number" min="0.000001" step="0.000001" value="100" required></label>
+          <div class="two"><label>Participantes<input name="members" type="number" min="2" max="30" value="3" required></label><label>Periodo (segundos)<input name="period" type="number" min="60" value="120" required></label></div>
+          <div class="two"><label>Multa por mora (%)<input name="penalty" type="number" min="0" max="20" step="0.01" value="5" required></label><label>Rendimiento simulado (%)<input name="rate" type="number" min="0" max="10" step="0.01" value="1" required></label></div>
+          <div class="two"><label>Inscripción (segundos)<input name="enrollment" type="number" min="60" value="86400" required></label><label>Revelación (segundos)<input name="reveal" type="number" min="60" value="3600" required></label></div>
+          <label>Adjudicación<select name="mode"><option value="0">Por turnos: un fondo por periodo</option><option value="1">Al cierre: reparto igual al finalizar</option></select></label>
+          <label>Orden<select name="lottery"><option value="false">Orden de inscripción</option><option value="true">Sorteo con compromiso y revelación</option></select></label>
+          <div class="callout" id="estimate"></div><button type="submit" disabled>Crear círculo ↗</button>
+        </form>
+      </article>
+      <article class="panel circle-panel"><div class="section-number">02 / PARTICIPAR</div><div class="heading-row"><h2>Tu círculo</h2><button class="subtle" id="refresh" disabled>Actualizar ⟳</button></div>
+        <label>Círculos en esta red<select id="circles"><option value="">Selecciona un círculo</option></select></label>
+        <div id="details" class="empty">Cada junta comienza con un acuerdo.<br>Crea una o selecciona una existente.</div>
+        <div id="actions" hidden>
+          <div class="buttons"><button id="fund">Financiar reserva</button><button id="join">Depositar garantía e inscribirme</button><button id="reveal">Revelar mi semilla</button><button id="pay">Aportar cuota</button><button id="close">Liquidar periodo vencido</button><button id="withdraw">Retirar mi saldo</button><button id="cancel" class="subtle">Cancelar por plazo vencido</button></div>
+          <label>Semilla privada del sorteo<input id="secret" autocomplete="off" spellcheck="false" placeholder="Se genera al inscribirte; guárdala como respaldo"></label>
+          <p class="small">Para el sorteo, conserva la semilla hasta revelarla. Se guarda en este navegador por billetera y círculo. Puedes copiarla y restaurarla aquí si cambias de navegador.</p>
+          <h3>Participantes y estado de cuenta</h3><div class="table-wrap"><table><thead><tr><th>Billetera</th><th>Garantía</th><th>Cuota actual</th><th>Puntual / mora</th><th>Retirable</th></tr></thead><tbody id="members"></tbody></table></div>
+          <h3>Orden verificable</h3><ol id="order"></ol>
+        </div>
+      </article>
+    </section>
+    <section class="principles"><div><b>01. Garantía previa</b><p>Cada persona bloquea el total de sus cuotas más las multas máximas. Si incumple, el contrato descuenta de esa garantía.</p></div><div><b>02. Puntualidad con premio</b><p>Multas y rendimiento simulado se reparten entre quienes pagaron a tiempo en ese periodo.</p></div><div><b>03. Reglas en cadena</b><p>Cualquiera puede liquidar al vencer el plazo. El saldo queda a nombre de cada beneficiario, que ejecuta su retiro.</p></div></section>
+  </main><footer>La Junta · Proyecto académico · Red local / Sepolia · No utilizar con dinero real.</footer>
+  <script type="module" src="/src/main.js"></script>
+</body></html>

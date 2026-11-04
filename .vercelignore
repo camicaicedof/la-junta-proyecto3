@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.local
+.pnpm-store
+node_modules
+artifacts
+cache
+deployments
+frontend/dist
+frontend/public/deployment.json
+Proyecto3-entrega.zip

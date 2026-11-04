@@ -1,0 +1,27 @@
+{
+  "name": "natillera-comunitaria",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "compile": "node scripts/hardhat.js compile",
+    "test": "node scripts/hardhat.js test",
+    "node": "node scripts/hardhat.js node",
+    "deploy:local": "node scripts/hardhat.js run scripts/deploy.js --network localhost",
+    "deploy:sepolia": "node scripts/hardhat.js run scripts/deploy.js --network sepolia",
+    "demo": "node scripts/hardhat.js run scripts/demo.js",
+    "dev": "vite frontend --host 127.0.0.1",
+    "build": "vite build frontend",
+    "build:cloud": "node scripts/build-cloud.js",
+    "keeper:local": "node scripts/hardhat.js run scripts/keeper.js --network localhost",
+    "keeper:sepolia": "node scripts/hardhat.js run scripts/keeper.js --network sepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "3.0.8",
+    "@openzeppelin/contracts": "5.0.2",
+    "dotenv": "16.4.7",
+    "ethers": "6.13.5",
+    "hardhat": "2.28.0",
+    "solc": "0.8.26",
+    "vite": "6.4.1"
+  }
+}

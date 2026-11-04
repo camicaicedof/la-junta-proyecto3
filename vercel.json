@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "npm install --include=dev",
+  "buildCommand": "npm run build:cloud",
+  "outputDirectory": "frontend/dist",
+  "headers": [
+    {
+      "source": "/deployment.json",
+      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+    }
+  ]
+}
